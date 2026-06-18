@@ -6,7 +6,11 @@ Improves perceived latency and user experience.
 
 ## Why conversation memory?
 
-Enables multi-turn interactions.
+LLM APIs are stateless.
+To create multi-turn conversations, previous messages must be stored and sent with every request.
+
+Benefits:
+--context retention,--Better user experience ,--ChatGPT -like behaviour
 
 ## Why token counting?
 

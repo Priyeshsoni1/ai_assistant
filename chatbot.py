@@ -13,18 +13,8 @@ client=OpenAI(
 MODEL=os.getenv("MODEL")
 
 
-def stream_response(user_input,persona="general"):
-    messages=[
-        {
-            "role":"system",
-            "content":PERSONAS[persona]
-        },
-        {
-            "role":"user",
-            "content":user_input
-        }
-    ]
-
+def stream_response(messages):
+    
     stream=client.chat.completions.create(
         messages=messages,
         model=MODEL,
