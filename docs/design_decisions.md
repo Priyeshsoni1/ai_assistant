@@ -15,3 +15,13 @@ Benefits:
 ## Why token counting?
 
 Tracks cost and context window usage.
+
+## Why History Trimming?
+
+Conversation history grows with every turn.
+
+Without trimming:
+--cost increases, --Latency increases, --context limits are reached
+
+The assistant keeps the system prompt and removed the oldes conversation
+messages when limits are exceeded.
