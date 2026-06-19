@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-from personas import PERSONAS
+from retryy import retry_with_backoff
 
 load_dotenv()
 
@@ -12,7 +12,7 @@ client=OpenAI(
 
 MODEL=os.getenv("MODEL")
 
-
+@retry_with_backoff
 def stream_response(messages):
     
     stream=client.chat.completions.create(
