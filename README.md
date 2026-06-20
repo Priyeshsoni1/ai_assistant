@@ -38,3 +38,23 @@ A production-style AI assistant built using OpenAI/OpenRouter APIs.
 - Request Logging
 - Session Analytics
 - Error Logging
+
+User
+↓
+
+Gradio UI
+↓
+
+Conversation Memory
+↓
+
+LLM
+↓
+
+Tool Calling
+↓
+
+Analytics
+↓
+
+Response
