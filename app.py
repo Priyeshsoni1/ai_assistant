@@ -97,7 +97,7 @@ def main():
         prompt_tokens=count_message_tokens(messages=messages)
 
         ##CALLING STREAM RESPONSE
-        assistant_response=stream_response(messages=messages)
+        assistant_response=stream_response(messages=messages,memory=memory)
 
         assistant_tokens=count_text_tokens(text=assistant_response)
 

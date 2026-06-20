@@ -27,6 +27,13 @@ class ConversationMemory:
                 "content":content
             }
         )
+    def add_tool_message(self,content):
+        self.messages.append(
+            {
+                "role":"tool",
+                "content":content
+            }
+        )
     
     def get_messages(self):
         return self.messages
