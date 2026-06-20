@@ -32,3 +32,9 @@ A production-style AI assistant built using OpenAI/OpenRouter APIs.
 - Pydantic Validation
 - Tool Registry
 - Function Calling Foundation
+
+## Observability Features
+
+- Request Logging
+- Session Analytics
+- Error Logging

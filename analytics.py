@@ -4,6 +4,7 @@ class UsageAnalytics:
         self.total_completion_tokens=0
         self.total_cost=0
         self.total_requests=0
+        self.total_latency=0
 
     def add_usage(self,prompt_tokens,completion_tokens,cost):
         self.total_prompt_tokens+=prompt_tokens
@@ -19,3 +20,16 @@ class UsageAnalytics:
             "total_tokens":self.total_completion_tokens+self.total_prompt_tokens,
             "cost":self.total_cost
         }
+    def add_latency(self,latency):
+        self.total_latency+=latency
+    @property
+    def average_latency(self):
+
+        if self.total_requests == 0:
+            return 0
+
+        return (
+            self.total_latency
+            /
+            self.total_requests
+        )

@@ -7,25 +7,24 @@ from pricing import calculate_cost
 from dotenv import load_dotenv
 from tools import TOOLS
 import os
+import time
 
 
 def main():
-    
-    print("="*30,"AI Assistant","="*30)
+    print("=" * 30, "AI Assistant", "=" * 30)
     print("Type 'exit' to quit. \n")
 
     load_dotenv()
 
-
-    analytics=UsageAnalytics()
-    memory = ConversationMemory(
-    PERSONAS["general"]
-)
+    analytics = UsageAnalytics()
+    memory = ConversationMemory(PERSONAS["general"])
 
     while True:
-        user_input=input("You: ")
-
-        
+        try:
+            user_input = input("You: ")
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodbye.")
+            break
 
         if user_input.lower()=='exit':
             print("Thank You ")
@@ -39,28 +38,33 @@ def main():
             parts = user_input.split()
 
             if len(parts) == 2:
-
                 current_persona = parts[1]
 
                 if current_persona in PERSONAS:
-
-                    memory = ConversationMemory(
-                        PERSONAS[current_persona]
-                    )
-
-                    print(
-                        f"Switched to {current_persona}"
-                    )
+                    memory = ConversationMemory(PERSONAS[current_persona])
+                    print(f"Switched to {current_persona}")
 
                 else:
                     print("Unknown persona")
+            else:
+                print("Usage: /personas <persona_name>")
 
             continue
 
         if user_input.startswith("/tool"):
-            parts=user_input.split()
-            tool_name=parts[1]
-            print(TOOLS[tool_name]())
+            parts = user_input.split()
+            if len(parts) < 2:
+                print("Usage: /tool <tool_name>")
+                continue
+
+            tool_name = parts[1]
+            try:
+                print(TOOLS[tool_name]())
+            except KeyError:
+                print(f"Unknown tool: {tool_name}")
+            except Exception as error:
+                print(f"Tool failed: {error}")
+            continue
 
         if user_input=="/history":
             from pprint import pprint
@@ -74,7 +78,7 @@ def main():
 
         if user_input=="/stats":
             print()
-            print(f"messages:",f"{memory.stats()["message_count"]}")
+            print("messages:", memory.stats()["message_count"])
             continue
         if user_input == "/tokens":
 
@@ -92,20 +96,30 @@ def main():
             continue
 
         memory.add_user_message(content=user_input)
-        messages=memory.get_messages()
+        messages = memory.get_messages()
 
-        prompt_tokens=count_message_tokens(messages=messages)
+        try:
+            prompt_tokens = count_message_tokens(messages=messages)
+            start_time = time.time()
+            assistant_response = stream_response(messages=messages, memory=memory)
+            end_time = time.time()
+            analytics.add_latency(latency=(end_time - start_time))
 
-        ##CALLING STREAM RESPONSE
-        assistant_response=stream_response(messages=messages,memory=memory)
-
-        assistant_tokens=count_text_tokens(text=assistant_response)
-
-        cost_data=calculate_cost(prompt_tokens=prompt_tokens,completion_tokens=assistant_tokens,model=os.getenv("MODEL"))
-
-        analytics.add_usage(prompt_tokens=prompt_tokens,completion_tokens=assistant_tokens,cost=cost_data[2])
-
-        memory.add_assistant_message(content=assistant_response)
+            assistant_tokens = count_text_tokens(text=assistant_response)
+            cost_data = calculate_cost(
+                prompt_tokens=prompt_tokens,
+                completion_tokens=assistant_tokens,
+                model=os.getenv("MODEL")
+            )
+            analytics.add_usage(
+                prompt_tokens=prompt_tokens,
+                completion_tokens=assistant_tokens,
+                cost=cost_data[2]
+            )
+            memory.add_assistant_message(content=assistant_response)
+        except Exception as error:
+            print(f"Error: {error}")
+            continue
 
         # print("\n-----After Every Response : Usage of Per Request -----")
         # print(f"prompt Tokens:",prompt_tokens)
