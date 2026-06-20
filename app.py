@@ -5,6 +5,7 @@ from tokenizer import count_message_tokens,count_text_tokens
 from analytics import UsageAnalytics
 from pricing import calculate_cost
 from dotenv import load_dotenv
+from tools import TOOLS
 import os
 
 
@@ -15,9 +16,11 @@ def main():
 
     load_dotenv()
 
-    memory=ConversationMemory(PERSONAS["general"])
-    analytics=UsageAnalytics()
 
+    analytics=UsageAnalytics()
+    memory = ConversationMemory(
+    PERSONAS["general"]
+)
 
     while True:
         user_input=input("You: ")
@@ -27,6 +30,37 @@ def main():
         if user_input.lower()=='exit':
             print("Thank You ")
             break
+
+        if user_input.lower()=="/personas":
+            print("\n Available Personas \n general \n python_mentor \n ai_engineer \n interviewer \n architect")
+            continue
+
+        if user_input.startswith("/personas"):
+            parts = user_input.split()
+
+            if len(parts) == 2:
+
+                current_persona = parts[1]
+
+                if current_persona in PERSONAS:
+
+                    memory = ConversationMemory(
+                        PERSONAS[current_persona]
+                    )
+
+                    print(
+                        f"Switched to {current_persona}"
+                    )
+
+                else:
+                    print("Unknown persona")
+
+            continue
+
+        if user_input.startswith("/tool"):
+            parts=user_input.split()
+            tool_name=parts[1]
+            print(TOOLS[tool_name]())
 
         if user_input=="/history":
             from pprint import pprint
@@ -62,7 +96,7 @@ def main():
 
         prompt_tokens=count_message_tokens(messages=messages)
 
-
+        ##CALLING STREAM RESPONSE
         assistant_response=stream_response(messages=messages)
 
         assistant_tokens=count_text_tokens(text=assistant_response)

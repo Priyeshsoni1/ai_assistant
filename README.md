@@ -22,4 +22,13 @@ A production-style AI assistant built using OpenAI/OpenRouter APIs.
 ## Status
 
 🚧 In Development
+
 # ai_assistant
+
+## Advanced Features
+
+- Persona Switching
+- Structured JSON Output
+- Pydantic Validation
+- Tool Registry
+- Function Calling Foundation
